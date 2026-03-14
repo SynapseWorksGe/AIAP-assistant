@@ -34,8 +34,13 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Install Playwright Chromium
-RUN playwright install chromium && \
-    playwright install-deps chromium
+# Install font packages renamed in Debian Trixie before playwright install-deps
+RUN apt-get update -qq && \
+    apt-get install -y -qq --no-install-recommends \
+        fonts-unifont fonts-ubuntu \
+    && rm -rf /var/lib/apt/lists/* && \
+    playwright install chromium && \
+    (playwright install-deps chromium || true)
 
 COPY app/ ./app/
 COPY entrypoint.sh .
