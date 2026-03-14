@@ -1,14 +1,15 @@
 #!/bin/bash
 set -e
 
-# Start PulseAudio in system mode
+echo "[entrypoint] Starting PulseAudio (system mode)..."
 pulseaudio --system --daemonize --no-cpu-limit --disable-shm 2>/dev/null || true
 
-# Start virtual X server (needed for non-headless Chromium)
+echo "[entrypoint] Starting Xvfb..."
 Xvfb :99 -screen 0 1280x720x24 -nolisten tcp &
 export DISPLAY=:99
 
-# Wait for PulseAudio
+# Wait for services
 sleep 1
 
-exec uvicorn app.main:app --host 0.0.0.0 --port 8001
+echo "[entrypoint] Starting AIAP Zoom Assistant as appuser..."
+exec gosu appuser uvicorn app.main:app --host 0.0.0.0 --port 8001

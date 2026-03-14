@@ -1,6 +1,6 @@
 FROM python:3.12-slim
 
-# System dependencies: PulseAudio, FFmpeg, Chromium deps
+# System dependencies: PulseAudio, FFmpeg, Chromium deps, gosu for privilege drop
 RUN apt-get update -qq && \
     apt-get install -y -qq --no-install-recommends \
         ffmpeg \
@@ -8,6 +8,7 @@ RUN apt-get update -qq && \
         pulseaudio-utils \
         xvfb \
         dbus \
+        gosu \
         libnss3 \
         libatk-bridge2.0-0 \
         libdrm2 \
@@ -40,9 +41,17 @@ COPY app/ ./app/
 COPY entrypoint.sh .
 RUN chmod +x entrypoint.sh
 
+# Create appuser and add to pulse-access group
 RUN useradd --system --no-create-home appuser && \
+    usermod -aG pulse-access appuser && \
     mkdir -p /tmp/zoom-recordings && chown appuser /tmp/zoom-recordings
+
+# PulseAudio config for system mode
+RUN mkdir -p /etc/pulse && \
+    echo "load-module module-native-protocol-unix auth-anonymous=1" >> /etc/pulse/system.pa && \
+    echo "load-module module-null-sink sink_name=default_capture sink_properties=device.description=DefaultCapture" >> /etc/pulse/system.pa
 
 EXPOSE 8001
 
+# Start as root (entrypoint starts PulseAudio/Xvfb, then drops to appuser)
 ENTRYPOINT ["./entrypoint.sh"]
