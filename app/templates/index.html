@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIAP Zoom Assistant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+    <div class="header-inner">
+        <div class="logo">AIAP Zoom Assistant <span>v0.1.0</span></div>
+        <button class="btn btn-outline btn-sm" onclick="checkHealth()">
+            <span class="health-dot" id="healthDot"></span> Статус
+        </button>
+    </div>
+</header>
+
+<div class="container">
+
+    <!-- Health status card (hidden by default) -->
+    <div class="status-card" id="statusCard" style="display:none">
+        <div class="status-header">
+            <h2>Состояние сервисов</h2>
+            <div class="status-actions">
+                <span class="status-overall" id="statusOverall">—</span>
+                <button class="status-close" onclick="toggleStatus()">&times;</button>
+            </div>
+        </div>
+        <div class="status-grid" id="statusGrid"></div>
+    </div>
+
+    <!-- Join meeting card -->
+    <div class="upload-card">
+        <h2>Подключиться к Zoom-встрече</h2>
+
+        <div class="join-form">
+            <div class="form-group">
+                <label class="form-label" for="zoomUrl">Ссылка на встречу</label>
+                <input type="text" class="form-input" id="zoomUrl"
+                       placeholder="https://zoom.us/j/12345678?pwd=..."
+                       autocomplete="off">
+                <div class="form-hint">Поддерживаются ссылки вида zoom.us/j/..., us05web.zoom.us/j/... и т.д.</div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group form-group-flex">
+                    <label class="form-label" for="botName">Имя бота</label>
+                    <input type="text" class="form-input" id="botName"
+                           placeholder="AIAP Recorder" value="">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="langSelect">Язык</label>
+                    <select class="lang-select" id="langSelect">
+                        <option value="ru-RU" selected>Русский</option>
+                        <option value="en-US">English</option>
+                        <option value="kk-KK">Қазақша</option>
+                        <option value="tr-TR">Türkçe</option>
+                        <option value="de-DE">Deutsch</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="autoTranscribe" checked>
+                    <span>Автоматически отправить на расшифровку после окончания записи</span>
+                </label>
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-primary" id="joinBtn" disabled>
+                    Подключиться и записать
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sessions list -->
+    <div class="jobs-card">
+        <h2>
+            Сессии записи
+            <button class="refresh-btn" onclick="loadSessions()">Обновить</button>
+        </h2>
+        <div id="sessionsList">
+            <div class="jobs-empty">Нет активных сессий. Введите ссылку на Zoom-встречу для начала.</div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Modal for viewing text content -->
+<div class="modal-overlay" id="modal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 id="modalTitle">Просмотр</h3>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+    </div>
+</div>
+
+<!-- Notification container -->
+<div id="notificationContainer"></div>
+
+<script src="static/app.js"></script>
+</body>
+</html>

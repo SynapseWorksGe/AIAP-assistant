@@ -5,9 +5,11 @@ for transcription via the AIAP Meeting Protocol service.
 
 import logging
 import os
+from pathlib import Path
 
 from fastapi import FastAPI
-from fastapi.responses import JSONResponse
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
 
 from app.config import settings
 from app.routers import zoom
@@ -18,6 +20,8 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+APP_DIR = Path(__file__).resolve().parent
+
 app = FastAPI(
     title="AIAP Zoom Assistant",
     description="Joins Zoom meetings, records audio, and sends recordings for transcription via AIAP Protocol.",
@@ -25,6 +29,13 @@ app = FastAPI(
 )
 
 app.include_router(zoom.router)
+app.mount("/static", StaticFiles(directory=APP_DIR / "static"), name="static")
+
+
+@app.get("/", response_class=HTMLResponse)
+async def index():
+    template = APP_DIR / "templates" / "index.html"
+    return template.read_text(encoding="utf-8")
 
 
 @app.get("/health")
