@@ -33,14 +33,12 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install Playwright Chromium
-# Install font packages renamed in Debian Trixie before playwright install-deps
+# Install Playwright Chromium + missing font deps for Debian Trixie
 RUN apt-get update -qq && \
-    apt-get install -y -qq --no-install-recommends \
-        fonts-unifont fonts-ubuntu \
-    && rm -rf /var/lib/apt/lists/* && \
+    apt-get install -y -qq --no-install-recommends fonts-unifont && \
+    rm -rf /var/lib/apt/lists/* && \
     playwright install chromium && \
-    (playwright install-deps chromium || true)
+    (playwright install-deps chromium 2>&1 || true)
 
 COPY app/ ./app/
 COPY entrypoint.sh .
