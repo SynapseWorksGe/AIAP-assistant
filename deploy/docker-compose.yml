@@ -1,0 +1,28 @@
+##############################################################################
+# Docker Compose — AIAP Zoom Assistant
+#
+# Standalone deployment. Can also be integrated into the main
+# AIAP-protocol docker-compose by adding this service definition.
+#
+# For integration with the main VPS docker-compose:
+#   1. Add the zoom-assistant service below to the main docker-compose.yml
+#   2. Add location /zoom/ block to nginx config
+#   3. docker compose up -d
+##############################################################################
+
+services:
+  zoom-assistant:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    container_name: zoom-assistant
+    env_file:
+      - ./envs/zoom-assistant.env
+    volumes:
+      - zoom-recordings:/tmp/zoom-recordings
+    ports:
+      - "8001:8001"
+    restart: unless-stopped
+
+volumes:
+  zoom-recordings:

@@ -1,0 +1,19 @@
+# Snippet to add to the main AIAP-protocol deploy/docker-compose.yml
+# Add this under the "services:" section:
+
+  # ── Zoom Assistant ───────────────────────────────────────────────────
+  zoom-assistant:
+    build:
+      context: /opt/AIAP-assistant
+      dockerfile: Dockerfile
+    container_name: zoom-assistant
+    env_file:
+      - ./envs/zoom-assistant.env
+    volumes:
+      - zoom-recordings:/tmp/zoom-recordings
+    restart: unless-stopped
+    networks:
+      - services
+
+# Add to the "volumes:" section:
+#   zoom-recordings:
